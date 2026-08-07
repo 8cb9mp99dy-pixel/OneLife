@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Minimalist, monochrome baseline — no color, high contrast, system light/dark only. */
+html {
+  color-scheme: light dark;
+}
+
+body {
+  @apply antialiased;
+}
