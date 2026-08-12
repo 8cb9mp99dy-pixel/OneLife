@@ -1,9 +1,10 @@
-export type Screen = 'today' | 'inbox' | 'habits' | 'settings';
+export type Screen = 'today' | 'inbox' | 'habits' | 'calendar' | 'settings';
 
 const TABS: { id: Screen; label: string }[] = [
   { id: 'today', label: 'Today' },
   { id: 'inbox', label: 'Inbox' },
   { id: 'habits', label: 'Habits' },
+  { id: 'calendar', label: 'Agenda' },
   { id: 'settings', label: 'Settings' },
 ];
 

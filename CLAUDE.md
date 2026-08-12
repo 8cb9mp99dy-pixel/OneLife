@@ -74,9 +74,22 @@ asking first, since it conflicts with the current design direction.
 - Conflict resolution is last-write-wins on the **server-assigned** `updated_at` (never the client clock). The client never sets `updated_at` on write.
 - Client never sends the `service_role` key anywhere — only the anon key, which is meaningless without RLS.
 
-## Out of scope for v1 (do not build)
+## Scope
 
-Calendar/events, meals/nutrition, workouts, goals tracking, journaling/mood,
-sharing/collaboration, push notifications, external integrations, AI
-features, theming beyond system light/dark. If one of these seems needed to
-make v1 work, say why instead of building it.
+v1 shipped with tasks, Today, habits, and offline sync only. Additions
+since are owner-requested, one at a time — don't scaffold "for later".
+
+Still out of scope unless explicitly asked: meals/nutrition, workouts,
+goals tracking, journaling/mood, sharing/collaboration, push
+notifications, AI features, theming beyond system light/dark.
+
+**Google Calendar (post-v1 addition)**: read-only, on the Agenda tab.
+Browser-only OAuth implicit flow (`features/calendar/googleAuth.ts`) — a
+plain redirect to accounts.google.com, no SDK script, no server, no new
+dependency. Google is the source of truth: calendar data is NEVER written
+to Supabase or the outbox (rule 4 governs writes; this feature makes
+none). Tokens live ~1h with no refresh token — "Reconnect" is an expected
+state, and the last fetch is cached in localStorage for offline viewing.
+The OAuth Client ID is user-supplied at runtime (Settings-free, pasted
+once on the Agenda tab) and is public by nature — but the token capture
+in main.tsx must stay ahead of anything touching location.hash.

@@ -4,6 +4,7 @@ import SignInScreen from './features/auth/SignInScreen';
 import InboxScreen from './features/tasks/InboxScreen';
 import TodayScreen from './features/today/TodayScreen';
 import HabitsScreen from './features/habits/HabitsScreen';
+import CalendarScreen from './features/calendar/CalendarScreen';
 import SettingsScreen from './features/settings/SettingsScreen';
 import CaptureBar from './features/tasks/components/CaptureBar';
 import BottomTabBar, { type Screen } from './components/BottomTabBar';
@@ -11,7 +12,7 @@ import { pullAll } from './lib/sync/pull';
 import { startFlushTriggers } from './lib/sync/flush';
 import { startRealtimeSync } from './lib/sync/realtime';
 
-const SCREENS: Screen[] = ['today', 'inbox', 'habits', 'settings'];
+const SCREENS: Screen[] = ['today', 'inbox', 'habits', 'calendar', 'settings'];
 
 // Mirrors the active screen to location.hash so refresh/back doesn't dump
 // you back to Today — a few lines of state, not a routing library.
@@ -76,6 +77,7 @@ function AuthGate() {
       {screen === 'today' && <TodayScreen />}
       {screen === 'inbox' && <InboxScreen />}
       {screen === 'habits' && <HabitsScreen />}
+      {screen === 'calendar' && <CalendarScreen />}
       {screen === 'settings' && <SettingsScreen />}
 
       <div className="fixed inset-x-0 bottom-0">
