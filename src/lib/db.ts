@@ -61,11 +61,14 @@ class OneLifeDB extends Dexie {
 
   constructor() {
     super('onelife');
+    // `deleted` and `active` are booleans, which IndexedDB cannot use as an
+    // index key — indexing them would silently never match, so those
+    // columns are filtered client-side instead (see each feature's api.ts).
     this.version(1).stores({
-      area: 'id, deleted, updated_at',
-      task: 'id, deleted, status, due_date, updated_at',
-      habit: 'id, deleted, active, updated_at',
-      habit_log: 'id, [habit_id+log_date], deleted, updated_at',
+      area: 'id, updated_at',
+      task: 'id, status, due_date, updated_at',
+      habit: 'id, updated_at',
+      habit_log: 'id, [habit_id+log_date], updated_at',
       outbox: '++id, [table_name+row_id], created_at',
       meta: 'key',
     });
