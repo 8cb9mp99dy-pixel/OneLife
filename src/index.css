@@ -9,4 +9,14 @@ html {
 
 body {
   @apply antialiased;
+  font-weight: 500;
+}
+
+@layer components {
+  /* Shared shape for every text input/textarea/select in the app —
+     rounded box instead of the old flat underline, one definition so it
+     can't drift per-screen. */
+  .field {
+    @apply w-full rounded-lg border border-neutral-300 bg-transparent px-3 py-2 text-sm outline-none transition-colors duration-150 focus:border-black disabled:opacity-50 dark:border-neutral-700 dark:focus:border-white;
+  }
 }

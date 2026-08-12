@@ -32,7 +32,7 @@ export default function SignInScreen() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-b border-neutral-300 bg-transparent py-1 outline-none focus:border-black dark:border-neutral-700 dark:focus:border-white"
+            className="field"
           />
         </div>
 
@@ -47,7 +47,7 @@ export default function SignInScreen() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border-b border-neutral-300 bg-transparent py-1 outline-none focus:border-black dark:border-neutral-700 dark:focus:border-white"
+            className="field"
           />
         </div>
 
@@ -56,7 +56,7 @@ export default function SignInScreen() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full border border-black py-2 text-sm disabled:opacity-50 dark:border-white"
+          className="w-full rounded-lg border border-black py-2 text-sm transition-colors duration-150 hover:bg-black hover:text-white disabled:opacity-50 dark:border-white dark:hover:bg-white dark:hover:text-black"
         >
           {submitting ? 'Signing in…' : 'Sign in'}
         </button>

@@ -27,7 +27,7 @@ export default function TaskItem({ task }: { task: TaskRow }) {
       <div className="flex items-center gap-3 py-3">
         <button
           onClick={() => updateTask(task, { status: STATUS_CYCLE[task.status] })}
-          className="shrink-0 border border-black px-2 py-1 text-xs uppercase tracking-wide dark:border-white"
+          className="shrink-0 rounded-md border border-black px-2 py-1 text-xs uppercase tracking-wide transition-colors duration-150 hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
         >
           {task.status}
         </button>
@@ -44,7 +44,7 @@ export default function TaskItem({ task }: { task: TaskRow }) {
         )}
         <button
           onClick={() => deleteTask(task)}
-          className="shrink-0 text-xs text-neutral-400 hover:text-black dark:text-neutral-500 dark:hover:text-white"
+          className="shrink-0 text-xs text-neutral-400 transition-colors duration-150 hover:text-black dark:text-neutral-500 dark:hover:text-white"
         >
           Delete
         </button>

@@ -12,7 +12,7 @@ export default function TaskDisclosure({ task }: { task: TaskRow }) {
         onChange={(e) => updateTask(task, { notes: e.target.value || null })}
         placeholder="Notes"
         rows={2}
-        className="w-full resize-none border border-neutral-300 bg-transparent p-2 text-sm outline-none focus:border-black dark:border-neutral-700 dark:focus:border-white"
+        className="field resize-none"
       />
       <div className="flex flex-wrap gap-4 text-xs">
         <label className="flex items-center gap-2">
@@ -20,7 +20,7 @@ export default function TaskDisclosure({ task }: { task: TaskRow }) {
           <select
             value={task.priority}
             onChange={(e) => updateTask(task, { priority: Number(e.target.value) })}
-            className="border border-neutral-300 bg-transparent p-1 dark:border-neutral-700"
+            className="field w-auto py-1"
           >
             {[0, 1, 2, 3].map((p) => (
               <option key={p} value={p}>
@@ -35,7 +35,7 @@ export default function TaskDisclosure({ task }: { task: TaskRow }) {
             type="date"
             value={task.due_date ?? ''}
             onChange={(e) => updateTask(task, { due_date: e.target.value || null })}
-            className="border border-neutral-300 bg-transparent p-1 dark:border-neutral-700"
+            className="field w-auto py-1"
           />
         </label>
         <label className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export default function TaskDisclosure({ task }: { task: TaskRow }) {
           <select
             value={task.area_id ?? ''}
             onChange={(e) => updateTask(task, { area_id: e.target.value || null })}
-            className="border border-neutral-300 bg-transparent p-1 dark:border-neutral-700"
+            className="field w-auto py-1"
           >
             <option value="">None</option>
             {areas.map((a) => (

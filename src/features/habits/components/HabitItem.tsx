@@ -29,7 +29,7 @@ export default function HabitItem({ habit }: { habit: HabitRow }) {
       />
       <button
         onClick={() => deleteHabit(habit)}
-        className="shrink-0 text-xs text-neutral-400 hover:text-black dark:text-neutral-500 dark:hover:text-white"
+        className="shrink-0 text-xs text-neutral-400 transition-colors duration-150 hover:text-black dark:text-neutral-500 dark:hover:text-white"
       >
         Delete
       </button>

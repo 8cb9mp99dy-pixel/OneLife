@@ -23,7 +23,7 @@ export default function BottomTabBar({
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
-          className={`flex-1 py-3 text-xs uppercase tracking-wide ${
+          className={`flex-1 py-3 text-xs uppercase tracking-wide transition-colors duration-150 ${
             active === tab.id ? 'text-black dark:text-white' : 'text-neutral-400 dark:text-neutral-600'
           }`}
         >

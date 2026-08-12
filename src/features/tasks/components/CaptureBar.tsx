@@ -36,14 +36,14 @@ export default function CaptureBar() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-t border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-black"
+      className="border-t border-neutral-200 bg-white px-6 py-3 dark:border-neutral-800 dark:bg-black"
     >
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Capture a task…"
         disabled={submitting}
-        className="mx-auto block w-full max-w-lg border-b border-neutral-300 bg-transparent py-2 text-base outline-none focus:border-black disabled:opacity-50 dark:border-neutral-700 dark:focus:border-white"
+        className="field mx-auto block max-w-lg text-base"
       />
       {error && (
         <p className="mx-auto mt-1 w-full max-w-lg text-xs text-neutral-500 dark:text-neutral-400">{error}</p>

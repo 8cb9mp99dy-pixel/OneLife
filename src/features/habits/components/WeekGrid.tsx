@@ -35,7 +35,7 @@ export default function WeekGrid({
         const scheduled = targetDays === null || targetDays.includes(d.getDay());
         const done = doneByDate.get(dateStr) === true;
         const isToday = dateStr === todayStr;
-        const base = 'flex h-8 w-8 shrink-0 items-center justify-center text-xs border';
+        const base = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs border transition-colors duration-150';
         const style = !scheduled
           ? 'border-neutral-100 text-neutral-300 dark:border-neutral-900 dark:text-neutral-700'
           : done

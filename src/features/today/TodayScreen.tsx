@@ -21,7 +21,7 @@ export default function TodayScreen() {
   }, [habits]);
 
   return (
-    <div className="mx-auto max-w-lg px-4 pb-40 pt-6">
+    <div className="mx-auto max-w-lg px-6 pb-40 pt-6">
       <h1 className="mb-4 text-lg font-medium">Today</h1>
       <TaskList tasks={nowTasks} />
 

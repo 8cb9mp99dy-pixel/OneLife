@@ -28,7 +28,7 @@ export default function HabitsScreen() {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 pb-40 pt-6">
+    <div className="mx-auto max-w-lg px-6 pb-40 pt-6">
       <h1 className="mb-4 text-lg font-medium">Habits</h1>
       <form onSubmit={handleSubmit} className="mb-6">
         <input
@@ -36,7 +36,7 @@ export default function HabitsScreen() {
           onChange={(e) => setName(e.target.value)}
           placeholder="New habit…"
           disabled={submitting}
-          className="w-full border-b border-neutral-300 bg-transparent py-2 text-sm outline-none focus:border-black disabled:opacity-50 dark:border-neutral-700 dark:focus:border-white"
+          className="field"
         />
         {error && <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{error}</p>}
       </form>

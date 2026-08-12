@@ -22,17 +22,17 @@ export default function InboxScreen() {
   );
 
   return (
-    <div className="mx-auto max-w-lg px-4 pb-40 pt-6">
+    <div className="mx-auto max-w-lg px-6 pb-40 pt-6">
       <h1 className="mb-4 text-lg font-medium">Inbox</h1>
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
         {STATUS_FILTERS.map((s) => (
           <button
             key={s}
             onClick={() => setStatus(s)}
-            className={`border px-2 py-1 uppercase tracking-wide ${
+            className={`rounded-md border px-2 py-1 uppercase tracking-wide transition-colors duration-150 ${
               status === s
                 ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                : 'border-neutral-300 dark:border-neutral-700'
+                : 'border-neutral-300 hover:border-black dark:border-neutral-700 dark:hover:border-white'
             }`}
           >
             {s}
@@ -41,7 +41,7 @@ export default function InboxScreen() {
         <select
           value={areaId}
           onChange={(e) => setAreaId(e.target.value)}
-          className="border border-neutral-300 bg-transparent px-2 py-1 dark:border-neutral-700"
+          className="field w-auto px-2 py-1 text-xs"
         >
           <option value="all">All areas</option>
           {areas.map((a) => (
