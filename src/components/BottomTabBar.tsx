@@ -1,11 +1,10 @@
-// Grows to include 'settings' once that screen lands in a later phase —
-// not stubbed in ahead of time.
-export type Screen = 'today' | 'inbox' | 'habits';
+export type Screen = 'today' | 'inbox' | 'habits' | 'settings';
 
 const TABS: { id: Screen; label: string }[] = [
   { id: 'today', label: 'Today' },
   { id: 'inbox', label: 'Inbox' },
   { id: 'habits', label: 'Habits' },
+  { id: 'settings', label: 'Settings' },
 ];
 
 export default function BottomTabBar({
