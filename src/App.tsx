@@ -4,6 +4,7 @@ import SignInScreen from './features/auth/SignInScreen';
 import SyncStatusBadge from './features/settings/SyncStatusBadge';
 import InboxScreen from './features/tasks/InboxScreen';
 import TodayScreen from './features/today/TodayScreen';
+import HabitsScreen from './features/habits/HabitsScreen';
 import CaptureBar from './features/tasks/components/CaptureBar';
 import BottomTabBar, { type Screen } from './components/BottomTabBar';
 import { supabase } from './lib/supabase';
@@ -14,7 +15,10 @@ import { startRealtimeSync } from './lib/sync/realtime';
 // Mirrors the active screen to location.hash so refresh/back doesn't dump
 // you back to Today — a few lines of state, not a routing library.
 function useScreen(): [Screen, (screen: Screen) => void] {
-  const fromHash = (): Screen => (window.location.hash === '#inbox' ? 'inbox' : 'today');
+  const fromHash = (): Screen => {
+    const h = window.location.hash.replace('#', '');
+    return h === 'inbox' || h === 'habits' ? h : 'today';
+  };
   const [screen, setScreen] = useState<Screen>(fromHash);
 
   useEffect(() => {
@@ -75,7 +79,7 @@ function AuthGate() {
         </button>
       </header>
 
-      {screen === 'today' ? <TodayScreen /> : <InboxScreen />}
+      {screen === 'today' ? <TodayScreen /> : screen === 'inbox' ? <InboxScreen /> : <HabitsScreen />}
 
       <div className="fixed inset-x-0 bottom-0">
         <CaptureBar />
