@@ -1,16 +1,38 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './features/auth/AuthProvider';
 import SignInScreen from './features/auth/SignInScreen';
 import SyncStatusBadge from './features/settings/SyncStatusBadge';
 import InboxScreen from './features/tasks/InboxScreen';
+import TodayScreen from './features/today/TodayScreen';
 import CaptureBar from './features/tasks/components/CaptureBar';
+import BottomTabBar, { type Screen } from './components/BottomTabBar';
 import { supabase } from './lib/supabase';
 import { pullAll } from './lib/sync/pull';
 import { startFlushTriggers } from './lib/sync/flush';
 import { startRealtimeSync } from './lib/sync/realtime';
 
+// Mirrors the active screen to location.hash so refresh/back doesn't dump
+// you back to Today — a few lines of state, not a routing library.
+function useScreen(): [Screen, (screen: Screen) => void] {
+  const fromHash = (): Screen => (window.location.hash === '#inbox' ? 'inbox' : 'today');
+  const [screen, setScreen] = useState<Screen>(fromHash);
+
+  useEffect(() => {
+    window.location.hash = screen;
+  }, [screen]);
+
+  useEffect(() => {
+    const onHashChange = () => setScreen(fromHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  return [screen, setScreen];
+}
+
 function AuthGate() {
   const { session, loading } = useAuth();
+  const [screen, setScreen] = useScreen();
 
   useEffect(() => {
     if (!session) return;
@@ -41,9 +63,6 @@ function AuthGate() {
     return <SignInScreen />;
   }
 
-  // No tab bar yet — Today and Habits don't exist until Phases 5/6, and a
-  // bar with placeholder tabs for unbuilt screens isn't worth it yet.
-  // Inbox is the only real screen right now, so it's just shown directly.
   return (
     <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
       <header className="flex items-center justify-between border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
@@ -55,8 +74,13 @@ function AuthGate() {
           Sign out
         </button>
       </header>
-      <InboxScreen />
-      <CaptureBar />
+
+      {screen === 'today' ? <TodayScreen /> : <InboxScreen />}
+
+      <div className="fixed inset-x-0 bottom-0">
+        <CaptureBar />
+        <BottomTabBar active={screen} onChange={setScreen} />
+      </div>
     </div>
   );
 }
