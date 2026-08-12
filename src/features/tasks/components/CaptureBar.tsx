@@ -38,15 +38,27 @@ export default function CaptureBar() {
       onSubmit={handleSubmit}
       className="border-t border-neutral-200 bg-white px-6 py-3 dark:border-neutral-800 dark:bg-black"
     >
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Capture a task…"
-        disabled={submitting}
-        className="field mx-auto block max-w-lg text-base"
-      />
+      <div className="mx-auto flex max-w-lg items-center gap-2">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Capture a task…"
+          disabled={submitting}
+          className="field flex-1 text-base"
+        />
+        <button
+          type="submit"
+          disabled={submitting || !title.trim()}
+          aria-label="Add task"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-white transition-colors duration-150 disabled:opacity-30 dark:bg-white dark:text-black"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
+        </button>
+      </div>
       {error && (
-        <p className="mx-auto mt-1 w-full max-w-lg text-xs text-neutral-500 dark:text-neutral-400">{error}</p>
+        <p className="mx-auto mt-1 max-w-lg text-xs text-neutral-500 dark:text-neutral-400">{error}</p>
       )}
     </form>
   );

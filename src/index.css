@@ -10,6 +10,17 @@ html {
 body {
   @apply antialiased;
   font-weight: 500;
+  /* ui-rounded resolves to SF Pro Rounded on iOS/macOS Safari — a
+     friendlier, warmer system font with zero network fetch. Browsers
+     that don't recognize the keyword just fall through to system-ui. */
+  font-family:
+    ui-rounded,
+    'SF Pro Rounded',
+    -apple-system,
+    system-ui,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 @layer components {
