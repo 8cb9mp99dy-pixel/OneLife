@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type TaskRow } from '../../lib/db';
 import { writeRow } from '../../lib/sync/write';
+import { newId } from '../../lib/id';
 
 export type NewTaskInput = {
   title: string;
@@ -17,7 +18,7 @@ export type NewTaskInput = {
 export async function createTask(input: NewTaskInput, userId: string): Promise<TaskRow> {
   const now = new Date().toISOString();
   const row: TaskRow = {
-    id: crypto.randomUUID(),
+    id: newId(),
     user_id: userId,
     created_at: now,
     updated_at: now,

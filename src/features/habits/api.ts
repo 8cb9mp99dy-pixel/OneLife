@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type HabitRow, type HabitLogRow } from '../../lib/db';
 import { writeRow } from '../../lib/sync/write';
+import { newId } from '../../lib/id';
 
 export type NewHabitInput = {
   name: string;
@@ -11,7 +12,7 @@ export type NewHabitInput = {
 export async function createHabit(input: NewHabitInput, userId: string): Promise<HabitRow> {
   const now = new Date().toISOString();
   const row: HabitRow = {
-    id: crypto.randomUUID(),
+    id: newId(),
     user_id: userId,
     created_at: now,
     updated_at: now,
@@ -59,7 +60,7 @@ export async function toggleHabitToday(habit: HabitRow, today: string): Promise<
     const row: HabitLogRow = existing
       ? { ...existing, done: true, deleted: false, updated_at: now }
       : {
-          id: crypto.randomUUID(),
+          id: newId(),
           user_id: habit.user_id,
           created_at: now,
           updated_at: now,

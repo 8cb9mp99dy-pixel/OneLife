@@ -7,22 +7,30 @@ export default function CaptureBar() {
   const { session } = useAuth();
   const [title, setTitle] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const trimmed = title.trim();
     if (!trimmed || !session || submitting) return;
     setSubmitting(true);
+    setError(null);
 
-    const parsed = parseDate(trimmed, new Date());
-    // If stripping the date keyword left nothing behind (e.g. the whole
-    // input was just "demain"), keep the original text rather than create
-    // a blank-titled task.
-    const finalTitle = parsed.title.length > 0 ? parsed.title : trimmed;
-
-    await createTask({ title: finalTitle, due_date: parsed.due_date }, session.user.id);
-    setTitle('');
-    setSubmitting(false);
+    try {
+      const parsed = parseDate(trimmed, new Date());
+      // If stripping the date keyword left nothing behind (e.g. the whole
+      // input was just "demain"), keep the original text rather than
+      // create a blank-titled task.
+      const finalTitle = parsed.title.length > 0 ? parsed.title : trimmed;
+      await createTask({ title: finalTitle, due_date: parsed.due_date }, session.user.id);
+      setTitle('');
+    } catch (err) {
+      // Without this, a failed write left the input permanently disabled
+      // with no explanation — this is what broke capture on iOS.
+      setError(err instanceof Error ? err.message : 'Could not capture task');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -37,6 +45,9 @@ export default function CaptureBar() {
         disabled={submitting}
         className="mx-auto block w-full max-w-lg border-b border-neutral-300 bg-transparent py-2 text-base outline-none focus:border-black disabled:opacity-50 dark:border-neutral-700 dark:focus:border-white"
       />
+      {error && (
+        <p className="mx-auto mt-1 w-full max-w-lg text-xs text-neutral-500 dark:text-neutral-400">{error}</p>
+      )}
     </form>
   );
 }

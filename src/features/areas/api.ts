@@ -1,11 +1,12 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type AreaRow } from '../../lib/db';
 import { writeRow } from '../../lib/sync/write';
+import { newId } from '../../lib/id';
 
 export async function createArea(name: string, userId: string): Promise<AreaRow> {
   const now = new Date().toISOString();
   const row: AreaRow = {
-    id: crypto.randomUUID(),
+    id: newId(),
     user_id: userId,
     created_at: now,
     updated_at: now,
