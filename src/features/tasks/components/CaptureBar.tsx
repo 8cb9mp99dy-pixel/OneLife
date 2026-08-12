@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { createTask } from '../api';
 import { useAuth } from '../../auth/AuthProvider';
+import { parseDate } from '../../../lib/dateParser/parseDate';
 
 export default function CaptureBar() {
   const { session } = useAuth();
@@ -12,7 +13,14 @@ export default function CaptureBar() {
     const trimmed = title.trim();
     if (!trimmed || !session || submitting) return;
     setSubmitting(true);
-    await createTask({ title: trimmed }, session.user.id);
+
+    const parsed = parseDate(trimmed, new Date());
+    // If stripping the date keyword left nothing behind (e.g. the whole
+    // input was just "demain"), keep the original text rather than create
+    // a blank-titled task.
+    const finalTitle = parsed.title.length > 0 ? parsed.title : trimmed;
+
+    await createTask({ title: finalTitle, due_date: parsed.due_date }, session.user.id);
     setTitle('');
     setSubmitting(false);
   }

@@ -2,12 +2,22 @@ import { useState } from 'react';
 import type { TaskRow } from '../../../lib/db';
 import { updateTask, deleteTask } from '../api';
 import TaskDisclosure from './TaskDisclosure';
+import Chip from '../../../components/Chip';
 
 const STATUS_CYCLE: Record<TaskRow['status'], TaskRow['status']> = {
   later: 'now',
   now: 'done',
   done: 'later',
 };
+
+function formatDueDate(dueDate: string): string {
+  // Parsed as local time (not UTC) so the displayed day always matches
+  // the stored YYYY-MM-DD, regardless of the viewer's timezone offset.
+  return new Date(`${dueDate}T00:00:00`).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  });
+}
 
 export default function TaskItem({ task }: { task: TaskRow }) {
   const [expanded, setExpanded] = useState(false);
@@ -29,6 +39,9 @@ export default function TaskItem({ task }: { task: TaskRow }) {
         >
           {task.title}
         </button>
+        {task.due_date && (
+          <Chip onDismiss={() => updateTask(task, { due_date: null })}>{formatDueDate(task.due_date)}</Chip>
+        )}
         <button
           onClick={() => deleteTask(task)}
           className="shrink-0 text-xs text-neutral-400 hover:text-black dark:text-neutral-500 dark:hover:text-white"
