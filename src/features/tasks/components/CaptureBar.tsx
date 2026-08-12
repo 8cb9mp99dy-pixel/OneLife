@@ -28,8 +28,7 @@ export default function CaptureBar() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="fixed inset-x-0 bottom-0 border-t border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-black"
-      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      className="border-t border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-black"
     >
       <input
         value={title}

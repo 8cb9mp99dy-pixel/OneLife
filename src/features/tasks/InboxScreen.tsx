@@ -22,7 +22,7 @@ export default function InboxScreen() {
   );
 
   return (
-    <div className="mx-auto max-w-lg px-4 pb-28 pt-6">
+    <div className="mx-auto max-w-lg px-4 pb-40 pt-6">
       <h1 className="mb-4 text-lg font-medium">Inbox</h1>
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs">
         {STATUS_FILTERS.map((s) => (
