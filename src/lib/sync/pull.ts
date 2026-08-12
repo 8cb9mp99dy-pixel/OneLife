@@ -1,8 +1,6 @@
 import { supabase } from '../supabase';
 import { db } from '../db';
-
-const SYNCED_TABLES = ['area', 'task', 'habit', 'habit_log'] as const;
-type SyncedTable = (typeof SYNCED_TABLES)[number];
+import { SYNCED_TABLES, type SyncedTableName as SyncedTable } from './types';
 
 const EPOCH = '1970-01-01T00:00:00.000Z';
 

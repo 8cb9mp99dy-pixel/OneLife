@@ -1,3 +1,6 @@
+export const SYNCED_TABLES = ['area', 'task', 'habit', 'habit_log'] as const;
+export type SyncedTableName = (typeof SYNCED_TABLES)[number];
+
 export type OutboxOperation = 'insert' | 'update' | 'delete';
 
 export type OutboxRow = {
