@@ -83,13 +83,18 @@ Still out of scope unless explicitly asked: meals/nutrition, workouts,
 goals tracking, journaling/mood, sharing/collaboration, push
 notifications, AI features, theming beyond system light/dark.
 
-**Google Calendar (post-v1 addition)**: read-only, on the Agenda tab.
-Browser-only OAuth implicit flow (`features/calendar/googleAuth.ts`) — a
-plain redirect to accounts.google.com, no SDK script, no server, no new
-dependency. Google is the source of truth: calendar data is NEVER written
-to Supabase or the outbox (rule 4 governs writes; this feature makes
-none). Tokens live ~1h with no refresh token — "Reconnect" is an expected
-state, and the last fetch is cached in localStorage for offline viewing.
-The OAuth Client ID is user-supplied at runtime (Settings-free, pasted
-once on the Agenda tab) and is public by nature — but the token capture
-in main.tsx must stay ahead of anything touching location.hash.
+**Apple Calendar (post-v1 addition)**: read-only, on the Agenda tab.
+Source is the calendar's published ("Public Calendar") webcal feed,
+relayed through the `ical-proxy` Supabase Edge Function
+(supabase/functions/ical-proxy/index.ts — deployed by pasting into the
+dashboard) because iCloud sends no CORS headers. That function is the
+only server-side code in this project; keep it JWT-verified and locked
+to *.icloud.com so it can't become an open proxy. The ICS parser
+(`features/calendar/ics.ts`) is deliberately partial — see its header
+for what it supports and the known timezone/BYDAY approximations; it has
+its own test file. Apple is the source of truth: calendar data is NEVER
+written to Supabase tables or the outbox (rule 4 governs writes; this
+feature makes none). Auto-refresh on focus + a 15-min interval; the last
+fetch is cached in localStorage for offline viewing. A published-calendar
+URL makes that calendar readable by anyone holding the (unguessable)
+link — the user opted into this trade.

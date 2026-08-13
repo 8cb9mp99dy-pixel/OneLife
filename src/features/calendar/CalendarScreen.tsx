@@ -1,63 +1,73 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { getClientId, setClientId, getAccessToken, startConnect, disconnect } from './googleAuth';
-import { fetchUpcomingEvents, getCachedEvents, TokenExpiredError } from './api';
+import { getFeedUrl, setFeedUrl, clearFeedUrl, fetchUpcomingEvents, getCachedEvents } from './icloud';
 import type { CalendarEvent } from './types';
 import EventList from './components/EventList';
 
-type Status = 'setup' | 'disconnected' | 'loading' | 'ready' | 'expired' | 'error';
+type Status = 'setup' | 'loading' | 'ready' | 'error';
+
+// Auto-update cadence while the tab is open. Apple pushes changes to
+// published feeds with its own delay on top of this — usually minutes.
+const REFRESH_INTERVAL_MS = 15 * 60_000;
 
 export default function CalendarScreen() {
   const [status, setStatus] = useState<Status>('loading');
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [clientIdInput, setClientIdInput] = useState('');
+  const [urlInput, setUrlInput] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!getClientId()) {
+    const feedUrl = getFeedUrl();
+    if (!feedUrl) {
       setStatus('setup');
       return;
     }
-    const token = getAccessToken();
+
     const cached = getCachedEvents();
     if (cached) setEvents(cached.events);
+    setStatus(cached ? 'ready' : 'loading');
 
-    if (!token) {
-      setStatus(cached ? 'expired' : 'disconnected');
-      return;
-    }
-
-    setStatus('loading');
     try {
-      setEvents(await fetchUpcomingEvents(token));
+      setEvents(await fetchUpcomingEvents(feedUrl));
+      setErrorMessage(null);
       setStatus('ready');
     } catch (err) {
-      if (err instanceof TokenExpiredError) {
-        setStatus('expired');
-      } else {
-        setErrorMessage(err instanceof Error ? err.message : 'Could not load events');
-        setStatus(cached ? 'expired' : 'error');
-      }
+      setErrorMessage(err instanceof Error ? err.message : 'Could not load the calendar feed');
+      // Keep showing cached events if there are any; only hard-fail empty.
+      setStatus(cached ? 'ready' : 'error');
     }
   }, []);
 
   useEffect(() => {
     void load();
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void load();
+    };
+    window.addEventListener('focus', onVisible);
+    document.addEventListener('visibilitychange', onVisible);
+    const interval = setInterval(() => void load(), REFRESH_INTERVAL_MS);
+
+    return () => {
+      window.removeEventListener('focus', onVisible);
+      document.removeEventListener('visibilitychange', onVisible);
+      clearInterval(interval);
+    };
   }, [load]);
 
-  function handleSaveClientId(e: FormEvent) {
+  function handleSaveUrl(e: FormEvent) {
     e.preventDefault();
-    const trimmed = clientIdInput.trim();
+    const trimmed = urlInput.trim();
     if (!trimmed) return;
-    setClientId(trimmed);
-    setClientIdInput('');
-    setStatus('disconnected');
+    setFeedUrl(trimmed);
+    setUrlInput('');
+    void load();
   }
 
   return (
     <div className="mx-auto max-w-lg px-6 pb-40 pt-6">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-lg font-medium">Calendar</h1>
-        {(status === 'ready' || status === 'expired') && (
+        <h1 className="text-lg font-medium">Agenda</h1>
+        {status === 'ready' && (
           <div className="flex gap-3 text-xs">
             <button
               onClick={() => void load()}
@@ -67,7 +77,7 @@ export default function CalendarScreen() {
             </button>
             <button
               onClick={() => {
-                disconnect();
+                clearFeedUrl();
                 setEvents([]);
                 setStatus('setup');
               }}
@@ -80,64 +90,58 @@ export default function CalendarScreen() {
       </div>
 
       {status === 'setup' && (
-        <form onSubmit={handleSaveClientId} className="space-y-3">
+        <form onSubmit={handleSaveUrl} className="space-y-3">
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Paste your Google OAuth Client ID to connect your calendar (read-only). It's created
-            once in Google Cloud Console — see the setup steps you were given.
+            Paste your Apple Calendar public link (webcal://…). On iPhone: Calendar app →
+            Calendars → tap ⓘ next to the calendar → enable Public Calendar → Share Link →
+            Copy. Read-only — the app never changes your calendar.
           </p>
           <input
-            value={clientIdInput}
-            onChange={(e) => setClientIdInput(e.target.value)}
-            placeholder="xxxxx.apps.googleusercontent.com"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="webcal://p12-caldav.icloud.com/published/…"
             className="field"
           />
           <button
             type="submit"
-            disabled={!clientIdInput.trim()}
+            disabled={!urlInput.trim()}
             className="w-full rounded-lg border border-black py-2 text-sm transition-colors duration-150 hover:bg-black hover:text-white disabled:opacity-30 dark:border-white dark:hover:bg-white dark:hover:text-black"
           >
-            Save
+            Connect
           </button>
         </form>
-      )}
-
-      {status === 'disconnected' && (
-        <button
-          onClick={startConnect}
-          className="w-full rounded-lg border border-black py-2 text-sm transition-colors duration-150 hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-        >
-          Connect Google Calendar
-        </button>
       )}
 
       {status === 'loading' && (
         <p className="py-8 text-center text-sm text-neutral-400 dark:text-neutral-500">Loading…</p>
       )}
 
-      {status === 'expired' && (
-        <div className="mb-4 space-y-2">
+      {status === 'error' && (
+        <div className="space-y-3 py-8 text-center">
+          <p className="text-sm text-neutral-400 dark:text-neutral-500">
+            {errorMessage ?? 'Could not load the calendar feed.'}
+          </p>
           <button
-            onClick={startConnect}
-            className="w-full rounded-lg border border-black py-2 text-sm transition-colors duration-150 hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
+            onClick={() => {
+              clearFeedUrl();
+              setStatus('setup');
+            }}
+            className="text-xs text-neutral-400 underline transition-colors duration-150 hover:text-black dark:text-neutral-500 dark:hover:text-white"
           >
-            Reconnect
+            Use a different link
           </button>
-          {events.length > 0 && (
-            <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Google session expired — showing the last fetched events.
-            </p>
-          )}
         </div>
       )}
 
-      {status === 'error' && (
-        <p className="py-8 text-center text-sm text-neutral-400 dark:text-neutral-500">
-          {errorMessage ?? 'Could not load events.'}
-        </p>
-      )}
-
-      {(status === 'ready' || (status === 'expired' && events.length > 0)) && (
-        <EventList events={events} />
+      {status === 'ready' && (
+        <>
+          {errorMessage && (
+            <p className="mb-3 text-xs text-neutral-400 dark:text-neutral-500">
+              Refresh failed — showing the last fetched events.
+            </p>
+          )}
+          <EventList events={events} />
+        </>
       )}
     </div>
   );
